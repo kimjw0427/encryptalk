@@ -1,0 +1,50 @@
+import threading
+import socket
+
+HOST = '203.253.198.247'
+PORT = 9999
+
+def client():
+    s = socket.socket()
+
+    s.connect((HOST,PORT))
+
+    while(True):
+        ms = input('문자: ')
+        s.sendall(ms.encode())
+        print(f'나: {ms}\n')
+        if ms == '종료':
+            break
+
+    s.close()
+
+def server():
+    s = socket.socket()
+
+    s.bind(("", PORT))
+    s.listen()
+
+    cs, ad = s.accept()
+
+    while(True):
+        data = cs.recv(1024)
+        ms = data.decode()
+        print(f'{ad}: {ms}\n')
+        if ms == '종료':
+            break
+
+    s.close()
+
+
+
+c_thread = threading.Thread(target=client)
+s_thread = threading.Thread(target=server)
+
+c_thread.daemon = True
+s_thread.daemon = True
+
+c_thread.start()
+s_thread.start()
+
+c_thread.join()
+s_thread.join()
