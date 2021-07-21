@@ -4,7 +4,7 @@ import time
 # -*- coding: utf-8 -*-
 from PyQt5 import QtCore, QtWidgets
 
-PORT = 9999
+PORT = 9998
 
 s_client = socket.socket()
 s_server = socket.socket()
@@ -50,8 +50,8 @@ def server(self):
                 ip = list(ad)[0]
 
                 if ip != REQ:
-                    ans = self.connect_alret(ip)
-                    if ans:
+                    ans = QtWidgets.QMessageBox.information(self, '연결 요청 감지', f"{ip}로부터 연결이 요청되었습니다.", QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+                    if ans == QtWidgets.QMessageBox.Yes:
                         if not LIS:
                             s_client.connect((ip, PORT))
                             c_server_client.sendall('ALLOW'.encode())
@@ -153,14 +153,6 @@ class MyWindow(QtWidgets.QMainWindow, Ui_Form):
             self.text_ms.setText("")
         else:
             print('연결이 되지 않았습니다.')
-
-    def connect_alret(self,ip):
-        buttonReply = QtWidgets.QMessageBox.information(self, '연결 요청 감지', f"{ip}로부터 연결이 요청되었습니다.", QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
-
-        if buttonReply == QtWidgets.QMessageBox.Yes:
-            return True
-        elif buttonReply == QtWidgets.QMessageBox.No:
-            return False
 
     def deny_alret(self):
         QtWidgets.QMessageBox.information(self, '연결 요청 실패', f"연결 요청이 거부되었습니다.")
