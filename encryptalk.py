@@ -167,3 +167,5 @@ if __name__ == "__main__":
     s_client.close()
     s_server.close()
     c_server_client.close()
+    
+    #QObject::setParent: Cannot set parent, new parent is in a different thread
