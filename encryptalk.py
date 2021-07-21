@@ -55,11 +55,12 @@ def server(self):
                             c_server_client.sendall('ALLOW'.encode())
                             break
                     else:
+                        c_server_client.sendall('DENY'.encode())
                         s_server.close()
                 else:
                     c_server_client.sendall('ALLOW'.encode())
                     break
-                
+
         CNT = True
         uid = list(ad)[0].split(".")[3]
 
