@@ -33,22 +33,25 @@ def server(self):
     global SCN
     global CNT
 
-    s_server.listen()
-
     s_server.bind(("", PORT))
+    s_server.listen()
     c_server_client, ad = s_server.accept()
+
     print('서버 연결 성공')
+
     SCN = True
     while(not(CCN)):
         time.sleep(1.5)
         print('클라이언트 연결 대기중')
     CNT = True
 
+    uid = list(ad)[0].split(".")[3]
+    print(uid)
 
     while(True):
         data = c_server_client.recv(1024)
         ms = data.decode()
-        self.console.append(f'유저{ad}: {ms}\n')
+        self.console.append(f'유저{uid}: {ms}')
         if ms == '종료':
             break
 
@@ -111,6 +114,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_Form):
 
         c_ip = self.text_ip.toPlainText()
 
+
         c_thread = threading.Thread(target=client,args=(c_ip,))
         s_thread = threading.Thread(target=server,args=(self,))
 
@@ -124,6 +128,8 @@ class MyWindow(QtWidgets.QMainWindow, Ui_Form):
         if CNT:
             ms = self.text_ms.toPlainText()
             s_client.sendall(ms.encode())
+            self.console.append(f'나: {ms}')
+            self.text_ms.setText("")
         else:
             print('연결이 되지 않았습니다.')
 
