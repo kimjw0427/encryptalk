@@ -1,5 +1,6 @@
 import threading
 import socket
+import time
 # -*- coding: utf-8 -*-
 from PyQt5 import QtCore, QtWidgets
 
@@ -9,29 +10,40 @@ s_client = socket.socket()
 s_server = socket.socket()
 
 CNT = False
+CCN = False
+SCN = False
+
 
 c_server_client = ''
 
 def client(HOST):
     global s_client
+    global CCN
 
     s_client.connect((HOST,PORT))
+    print('클라이언트 연결 성공')
+    CCN = True
+    while(not(SCN)):
+        time.sleep(1.5)
+        print('클라이언트 연결 대기중')
 
-    while(True):
-        ms = input('문자: ')
-        s_client.sendall(ms.encode())
-        print(f'나: {ms}\n')
-        if ms == '종료':
-            break
-
-    s_client.close()
 
 def server(self):
     global c_server_client
+    global SCN
+    global CNT
+
     s_server.listen()
 
     s_server.bind(("", PORT))
     c_server_client, ad = s_server.accept()
+    print('서버 연결 성공')
+    SCN = True
+    while(not(CCN)):
+        time.sleep(1.5)
+        print('클라이언트 연결 대기중')
+    CNT = True
+
 
     while(True):
         data = c_server_client.recv(1024)
@@ -108,8 +120,6 @@ class MyWindow(QtWidgets.QMainWindow, Ui_Form):
         c_thread.start()
         s_thread.start()
 
-        CNT = True
-
     def send_ms(self):
         if CNT:
             ms = self.text_ms.toPlainText()
@@ -123,3 +133,5 @@ if __name__ == "__main__":
     myWindow = MyWindow()
     myWindow.show()
     sys.exit(app.exec_())
+    s_client.close()
+    s_server.close()
