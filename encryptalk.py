@@ -10,52 +10,67 @@ s_client = socket.socket()
 s_server = socket.socket()
 
 CNT = False
-CCN = False
-SCN = False
-
+LIS = False
+REQ = ''
 
 c_server_client = ''
 
-def client(HOST):
+def client(self,HOST):
     global s_client
-    global CCN
+    global CNT
+    global LIS
+    global REQ
 
+    LIS = True
+    REQ = HOST
     s_client.connect((HOST,PORT))
-    print('클라이언트 연결 성공')
-    CCN = True
-    while(not(SCN)):
-        time.sleep(1.5)
-        print('클라이언트 연결 대기중')
+    data = s_client.recv(1024).decode()
+
+    if data == 'ALLOW':
+        CNT = True
+    else:
+        LIS = False
+        s_client.close()
+        self.deny_alret()
+
 
 
 def server(self):
     global c_server_client
-    global SCN
     global CNT
 
-    s_server.bind(("", PORT))
-    s_server.listen()
-    c_server_client, ad = s_server.accept()
-
-    print('서버 연결 성공')
-
-    SCN = True
-    while(not(CCN)):
-        time.sleep(1.5)
-        print('클라이언트 연결 대기중')
-    CNT = True
-
-    uid = list(ad)[0].split(".")[3]
-    print(uid)
-
     while(True):
-        data = c_server_client.recv(1024)
-        ms = data.decode()
-        self.console.append(f'유저{uid}: {ms}')
-        if ms == '종료':
-            break
+        while(True):
+                s_server.bind(("", PORT))
+                s_server.listen()
 
-    c_server_client.close()
+                c_server_client, ad = s_server.accept()
+                ip = list(ad)[0]
+
+                if ip != REQ:
+                    ans = self.connect_alret(ip)
+                    if ans:
+                        if not LIS:
+                            s_client.connect((HOST, PORT))
+                            c_server_client.sendall('ALLOW'.encode())
+                            break
+                    else:
+                        s_server.close()
+                else:
+                    c_server_client.sendall('ALLOW'.encode())
+                    break
+                
+        CNT = True
+        uid = list(ad)[0].split(".")[3]
+
+        while(True):
+            data = c_server_client.recv(1024)
+            ms = data.decode()
+            self.console.append(f'유저{uid}: {ms}')
+
+        CNT = False
+
+        s_server.close()
 
 
 class Ui_Form(object):
@@ -101,6 +116,7 @@ class Ui_Form(object):
         self.button_send.setText(_translate("MainWindow", "보내기"))
         self.pushButton.setText(_translate("MainWindow", "연결"))
 
+
 class MyWindow(QtWidgets.QMainWindow, Ui_Form):
     def __init__(self):
         super().__init__()
@@ -109,29 +125,41 @@ class MyWindow(QtWidgets.QMainWindow, Ui_Form):
         self.pushButton.clicked.connect(self.start_connect)
         self.button_send.clicked.connect(self.send_ms)
 
+        s_thread = threading.Thread(target=server,args=(self,))
+        s_thread.daemon = True
+        s_thread.start()
+
+
     def start_connect(self):
         global CNT
 
         c_ip = self.text_ip.toPlainText()
 
-
-        c_thread = threading.Thread(target=client,args=(c_ip,))
-        s_thread = threading.Thread(target=server,args=(self,))
-
+        c_thread = threading.Thread(target=client,args=(self,c_ip))
         c_thread.daemon = True
-        s_thread.daemon = True
-
         c_thread.start()
-        s_thread.start()
 
     def send_ms(self):
         if CNT:
             ms = self.text_ms.toPlainText()
             s_client.sendall(ms.encode())
-            self.console.append(f'나: {ms}')
+            if not ms == "":
+                self.console.append(f'나: {ms}')
             self.text_ms.setText("")
         else:
             print('연결이 되지 않았습니다.')
+
+    def connect_alret(self,ip):
+        buttonReply = QtWidgets.QMessageBox.information(self, '연결 요청 감지', f"{ip}로부터 연결이 요청되었습니다.", QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+
+        if buttonReply == QtWidgets.QMessageBox.Yes:
+            return True
+        elif buttonReply == QtWidgets.QMessageBox.No:
+            return False
+
+    def deny_alret(self):
+        QtWidgets.QMessageBox.information(self, '연결 요청 실패', f"연결 요청이 거부되었습니다.")
+
 
 if __name__ == "__main__":
     import sys
@@ -141,3 +169,4 @@ if __name__ == "__main__":
     sys.exit(app.exec_())
     s_client.close()
     s_server.close()
+    c_server_client.close()
