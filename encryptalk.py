@@ -15,6 +15,7 @@ REQ = ''
 
 c_server_client = ''
 
+
 def client(self,HOST):
     global s_client
     global CNT
@@ -32,8 +33,7 @@ def client(self,HOST):
         LIS = False
         s_client.close()
         s_client = socket.socket()
-        self.deny_alret()
-
+        QtWidgets.QMessageBox.information(self, '연결 요청 실패', f"연결 요청이 거부되었습니다.")
 
 
 def server(self):
@@ -53,12 +53,11 @@ def server(self):
                     ans = self.connect_alret(ip)
                     if ans:
                         if not LIS:
-                            s_client.connect((HOST, PORT))
+                            s_client.connect((ip, PORT))
                             c_server_client.sendall('ALLOW'.encode())
                             break
                     else:
                         c_server_client.sendall('DENY'.encode())
-                        s_server.close()
                         s_server = socket.socket()
                 else:
                     c_server_client.sendall('ALLOW'.encode())
@@ -73,7 +72,6 @@ def server(self):
             self.console.append(f'유저{uid}: {ms}')
 
         CNT = False
-
         s_server.close()
 
 
