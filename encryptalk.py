@@ -1,41 +1,46 @@
 import threading
 import socket
 # -*- coding: utf-8 -*-
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-HOST = '203.253.198.247'
 PORT = 9999
 
-def client():
-    s = socket.socket()
+s_client = socket.socket()
+s_server = socket.socket()
 
-    s.connect((HOST,PORT))
+CNT = False
+
+c_server_client = ''
+
+def client(HOST):
+    global s_client
+
+    s_client.connect((HOST,PORT))
 
     while(True):
         ms = input('문자: ')
-        s.sendall(ms.encode())
+        s_client.sendall(ms.encode())
         print(f'나: {ms}\n')
         if ms == '종료':
             break
 
-    s.close()
+    s_client.close()
 
-def server():
-    s = socket.socket()
+def server(self):
+    global c_server_client
+    s_server.listen()
 
-    s.bind(("", PORT))
-    s.listen()
-
-    cs, ad = s.accept()
+    s_server.bind(("", PORT))
+    c_server_client, ad = s_server.accept()
 
     while(True):
-        data = cs.recv(1024)
+        data = c_server_client.recv(1024)
         ms = data.decode()
-        print(f'유저{ad.split(".")[3]}: {ms}\n')
+        self.console.append(f'유저{ad}: {ms}\n')
         if ms == '종료':
             break
 
-    s.close()
+    c_server_client.close()
 
 
 class Ui_Form(object):
@@ -86,6 +91,31 @@ class MyWindow(QtWidgets.QMainWindow, Ui_Form):
         super().__init__()
         self.setupUi(self)
 
+        self.pushButton.clicked.connect(self.start_connect)
+        self.button_send.clicked.connect(self.send_ms)
+
+    def start_connect(self):
+        global CNT
+
+        c_ip = self.text_ip.toPlainText()
+
+        c_thread = threading.Thread(target=client,args=(c_ip,))
+        s_thread = threading.Thread(target=server,args=(self,))
+
+        c_thread.daemon = True
+        s_thread.daemon = True
+
+        c_thread.start()
+        s_thread.start()
+
+        CNT = True
+
+    def send_ms(self):
+        if CNT:
+            ms = self.text_ms.toPlainText()
+            s_client.sendall(ms.encode())
+        else:
+            print('연결이 되지 않았습니다.')
 
 if __name__ == "__main__":
     import sys
