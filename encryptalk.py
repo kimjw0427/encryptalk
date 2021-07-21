@@ -31,6 +31,7 @@ def client(self,HOST):
     else:
         LIS = False
         s_client.close()
+        s_client = socket.socket()
         self.deny_alret()
 
 
@@ -38,6 +39,7 @@ def client(self,HOST):
 def server(self):
     global c_server_client
     global CNT
+    global s_server
 
     while(True):
         while(True):
@@ -57,6 +59,7 @@ def server(self):
                     else:
                         c_server_client.sendall('DENY'.encode())
                         s_server.close()
+                        s_server = socket.socket()
                 else:
                     c_server_client.sendall('ALLOW'.encode())
                     break
@@ -134,11 +137,14 @@ class MyWindow(QtWidgets.QMainWindow, Ui_Form):
     def start_connect(self):
         global CNT
 
-        c_ip = self.text_ip.toPlainText()
+        if not CNT:
+            c_ip = self.text_ip.toPlainText()
 
-        c_thread = threading.Thread(target=client,args=(self,c_ip))
-        c_thread.daemon = True
-        c_thread.start()
+            c_thread = threading.Thread(target=client,args=(self,c_ip))
+            c_thread.daemon = True
+            c_thread.start()
+        else:
+            print('이미 연결상태 입니다.')
 
     def send_ms(self):
         if CNT:
