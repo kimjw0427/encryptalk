@@ -110,6 +110,46 @@ def encryption(a, e, n):
 def decryption(enc, d, n):
     return Q_mod(enc, d, n)
 
+def enc_int(text):
+    result = ''
+    for i in range(0,len(text)):
+        enc_code = str(ord(text[i]))
+        if len(enc_code) <5:
+            enc_code = '0'*(5-len(enc_code)) + enc_code
+        result = result + enc_code
+    result = '1' + result
+    return result
+
+def dec_int(code):
+    result = ''
+    code = code[1:len(code)]
+    for i in range(0,len(code),5):
+        result = result + chr(int(code[i:i+5]))
+    return result
+
+def split_string(text):
+    result = []
+    if len(text) > 12:
+        for i in range(0,len(text),12):
+            result.append(text[i:i+12])
+    else:
+        return [text]
+    return result
+
+def trans_enc(text):
+    text = split_string(text)
+    result = ''
+    for i in text:
+        result = f'{result}/{encryption(enc_int(i),C_E,C_N)}'
+    return result
+
+def trans_dec(code):
+    code = code.split('/')
+    result = ''
+    for i in range(1,len(code)):
+        result = result + decryption(dec_int(code[i],S_D,S_N))
+    return result
+
 PORT = 9998
 
 s_client = socket.socket()
@@ -209,7 +249,7 @@ def server(self):
         while (CNT):
             data = c_server_client.recv(1024)
             ms = data.decode()
-            self.console.append(f'유저{uid}: {ms}')
+            self.console.append(f'유저{uid}: {trans_dec(ms)}')
 
         CNT = False
         c_server_client.close()
@@ -419,7 +459,7 @@ class MyWindow(QtWidgets.QMainWindow, Ui_Form):
             ms = self.text_ms.toPlainText()
             s_client.sendall(ms.encode())
             if not ms == "":
-                self.console.append(f'나: {ms}')
+                self.console.append(f'나: {trans_enc(ms)}')
             self.text_ms.setText("")
         else:
             print('연결이 되지 않았습니다.')
