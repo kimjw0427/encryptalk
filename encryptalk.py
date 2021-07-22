@@ -175,6 +175,13 @@ def server(self):
                 if ans == QtWidgets.QMessageBox.Yes:
                     if not LIS:
                         s_client.connect((ip, PORT))
+                        
+                        C_E = int(s_client.recv(1024).decode())
+                        C_N = int(s_client.recv(1024).decode())
+
+                        self.console.append(f'[클라이언트] 암호화 키 저장')
+                        self.console.append(f'[클라이언트] 공개 키 저장')
+
                         c_server_client.sendall('ALLOW'.encode())
                         break
                 else:
