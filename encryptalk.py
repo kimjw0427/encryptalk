@@ -152,7 +152,7 @@ def trans_dec(code):
     return result
 
 
-PORT = 9998
+PORT = 9997
 
 s_client = socket.socket()
 s_server = socket.socket()
@@ -330,18 +330,6 @@ class Ui_Form(object):
         self.console.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.console.setReadOnly(True)
         self.console.setObjectName("console")
-        self.myconsole = QtWidgets.QLineEdit(self.centralwidget)
-        self.myconsole.setGeometry(QtCore.QRect(30, 130, 291, 291))
-        font = QtGui.QFont()
-        font.setFamily("Agency FB")
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.myconsole.setFont(font)
-        self.myconsole.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
-        self.myconsole.setFrame(False)
-        self.myconsole.setReadOnly(True)
-        self.myconsole.setObjectName("myconsole")
         self.check_rsa = QtWidgets.QCheckBox(self.centralwidget)
         self.check_rsa.setGeometry(QtCore.QRect(301, 47, 21, 16))
         self.check_rsa.setText("")
@@ -459,10 +447,11 @@ class MyWindow(QtWidgets.QMainWindow, Ui_Form):
     def send_ms(self):
         if CNT:
             ms = self.text_ms.toPlainText()
-            s_client.sendall(ms.encode())
-            if not ms == "":
-                self.console.append(f'나: {trans_enc(ms)}')
-            self.text_ms.setText("")
+            if ms != '':
+                s_client.sendall(trans_enc(ms).encode())
+                if not ms == "":
+                    self.console.append(f'나: {ms}')
+                self.text_ms.setText("")
         else:
             print('연결이 되지 않았습니다.')
 
