@@ -197,7 +197,9 @@ def client(self, HOST):
         LIS = False
         s_client.close()
         s_client = socket.socket()
+        root = tk.Tk()
         tk.messagebox.showinfo('연결 요청 실패','요청이 거부되었습니다.')
+        root.destroy()
 
 
 def server(self):
@@ -219,7 +221,9 @@ def server(self):
             ip = list(ad)[0]
 
             if ip != REQ:
+                root = tk.Tk()
                 ans = tk.messagebox.askquestion('연결 요청 감지', f'{ip}로부터 연결 감지',icon='warning')
+                root.destroy()
                 if ans == 'yes':
                     if not LIS:
                         s_client.connect((ip, PORT))
