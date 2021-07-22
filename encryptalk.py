@@ -181,8 +181,11 @@ def client(self, HOST):
     if data == 'ALLOW':
         CNT = True
 
+        s_client.sendall('RD'.encode())
         C_E = int(s_client.recv(1024).decode())
         self.console.append(f'[클라이언트] 암호화 키 저장')
+
+        s_client.sendall('RD2'.encode())
         C_N = int(s_client.recv(1024).decode())
         self.console.append(f'[클라이언트] 공개 키 저장')
 
@@ -222,8 +225,12 @@ def server(self):
                         c_server_client.sendall('ALLOW'.encode())
 
                         dummy = s_client.recv(1024)
+
+                        s_client.sendall('RD'.encode())
                         C_E = int(s_client.recv(1024).decode())
                         self.console.append(f'[클라이언트] 암호화 키 저장')
+
+                        s_client.sendall('RD2'.encode())
                         C_N = int(s_client.recv(1024).decode())
                         self.console.append(f'[클라이언트] 공개 키 저장')
                         break
@@ -240,12 +247,16 @@ def server(self):
         S_D = key[0]
         S_N = key[2]
 
-        time.sleep(1)
-        c_server_client.sendall(str(key[1]).encode())
-        self.console.append(f'[서버] 암호화 키 전송')
-        time.sleep(1)
-        c_server_client.sendall(str(key[2]).encode())
-        self.console.append(f'[서버] 공개 키 전송')
+        if c_server_client.recv(1024).decode() == 'RD':
+            c_server_client.sendall(str(key[1]).encode())
+            self.console.append(f'[서버] 암호화 키 전송')
+        else:
+            self.console.append(f'[서버] 암호화 키 전송 에러!')
+        if c_server_client.recv(1024).decode() == 'RD2':
+            c_server_client.sendall(str(key[2]).encode())
+            self.console.append(f'[서버] 공개 키 전송')
+        else:
+            self.console.append(f'[서버] 공개 키 전송 에러!')
 
         uid = list(ad)[0].split(".")[3]
 
