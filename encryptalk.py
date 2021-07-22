@@ -192,12 +192,15 @@ def client(self, HOST):
         C_N = int(s_client.recv(1024).decode())
         self.console.append(f'[클라이언트] 공개 키 저장')
 
+        print('client complete')
+
 
     else:
         LIS = False
         s_client.close()
         s_client = socket.socket()
         root = tk.Tk()
+        root.withdraw()
         tk.messagebox.showinfo('연결 요청 실패','요청이 거부되었습니다.')
         root.destroy()
 
@@ -222,6 +225,7 @@ def server(self):
 
             if ip != REQ:
                 root = tk.Tk()
+                root.withdraw()
                 ans = tk.messagebox.askquestion('연결 요청 감지', f'{ip}로부터 연결 감지',icon='warning')
                 root.destroy()
                 if ans == 'yes':
@@ -239,6 +243,7 @@ def server(self):
                         s_client.sendall('RD2'.encode())
                         C_N = int(s_client.recv(1024).decode())
                         self.console.append(f'[클라이언트] 공개 키 저장')
+                        print('client complete')
                         break
                 else:
                     c_server_client.sendall('DENY'.encode())
@@ -270,6 +275,7 @@ def server(self):
 
         print(f'{S_N}\n{S_D}\n{C_N}\n{C_E}')
 
+        print('Server complete')
         while (CNT):
             data = c_server_client.recv(1024)
             ms = data.decode()
