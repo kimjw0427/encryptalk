@@ -202,6 +202,8 @@ def server(self):
 
     global S_D
     global S_N
+    global C_E
+    global C_N
 
     while (True):
         while (True):
@@ -218,15 +220,14 @@ def server(self):
                     if not LIS:
                         s_client.connect((ip, PORT))
 
-                        dummy = s_client.recv(1024).decode()
-                        print(dummy)
+                        c_server_client.sendall('ALLOW'.encode())
+
+                        dummy = s_client.recv(1024)
                         C_E = int(s_client.recv(1024).decode())
                         C_N = int(s_client.recv(1024).decode())
 
                         self.console.append(f'[클라이언트] 암호화 키 저장')
                         self.console.append(f'[클라이언트] 공개 키 저장')
-
-                        c_server_client.sendall('ALLOW'.encode())
                         break
                 else:
                     c_server_client.sendall('DENY'.encode())
@@ -240,6 +241,9 @@ def server(self):
         key = RSA()
         S_D = key[0]
         S_N = key[2]
+
+        time.sleep(1)
+
         c_server_client.sendall(str(key[1]).encode())
         c_server_client.sendall(str(key[2]).encode())
 
@@ -247,6 +251,8 @@ def server(self):
         self.console.append(f'[서버] 공개 키 전송')
 
         uid = list(ad)[0].split(".")[3]
+
+        print(f'{S_N}\n{S_D}\n{C_N}\n{C_E}')
 
         while (CNT):
             data = c_server_client.recv(1024)
