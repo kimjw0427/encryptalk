@@ -217,7 +217,7 @@ class Ui_Form(object):
         self.background = QtWidgets.QLabel(self.centralwidget)
         self.background.setGeometry(QtCore.QRect(0, 0, 350, 500))
         self.background.setText("")
-        self.background.setPixmap(QtGui.QPixmap("GUI.svg"))
+        self.background.setPixmap(QtGui.QPixmap("GUI.png"))
         self.background.setScaledContents(True)
         self.background.setObjectName("background")
         self.button_connect = QtWidgets.QPushButton(self.centralwidget)
