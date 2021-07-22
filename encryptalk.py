@@ -200,7 +200,6 @@ def client(self, HOST):
         s_client.close()
         s_client = socket.socket()
         root = tk.Tk()
-        root.withdraw()
         tk.messagebox.showinfo('연결 요청 실패','요청이 거부되었습니다.')
         root.destroy()
 
@@ -225,7 +224,6 @@ def server(self):
 
             if ip != REQ:
                 root = tk.Tk()
-                root.withdraw()
                 ans = tk.messagebox.askquestion('연결 요청 감지', f'{ip}로부터 연결 감지',icon='warning')
                 root.destroy()
                 if ans == 'yes':
@@ -482,9 +480,6 @@ class MyWindow(QtWidgets.QMainWindow, Ui_Form):
                 self.text_ms.setText("")
         else:
             print('연결이 되지 않았습니다.')
-
-    def deny_alret(self):
-        QtWidgets.QMessageBox.information(self, '연결 요청 실패', f"연결 요청이 거부되었습니다.")
 
 
 if __name__ == "__main__":
