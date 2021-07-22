@@ -118,9 +118,10 @@ def enc_int(text):
             enc_code = '0'*(5-len(enc_code)) + enc_code
         result = result + enc_code
     result = '1' + result
-    return result
+    return int(result)
 
 def dec_int(code):
+    code = str(code)
     result = ''
     code = code[1:len(code)]
     for i in range(0,len(code),5):
@@ -147,8 +148,9 @@ def trans_dec(code):
     code = code.split('/')
     result = ''
     for i in range(1,len(code)):
-        result = result + decryption(dec_int(code[i],S_D,S_N))
+        result = result + dec_int(decryption(int(code[i]),S_D,S_N))
     return result
+
 
 PORT = 9998
 
@@ -245,6 +247,8 @@ def server(self):
         self.console.append(f'[서버] 공개 키 전송')
 
         uid = list(ad)[0].split(".")[3]
+
+        print(f'{S_D}\n{S_N}\n{C_E}\n{C_N}')
 
         while (CNT):
             data = c_server_client.recv(1024)
