@@ -206,8 +206,6 @@ def server(self):
 
         uid = list(ad)[0].split(".")[3]
 
-        print('f{S_D}\n{S_N}\n{C_E}\n{C_N}')
-
         while (CNT):
             data = c_server_client.recv(1024)
             ms = data.decode()
