@@ -1,3 +1,4 @@
+
 import threading
 import socket
 import time
@@ -193,7 +194,7 @@ def client(self, HOST):
         self.console.append(f'[클라이언트] 공개 키 저장')
 
         print('client complete')
-
+        time.sleep(10)
 
     else:
         LIS = False
@@ -221,6 +222,7 @@ def server(self):
 
             c_server_client, ad = s_server.accept()
             ip = list(ad)[0]
+            print('[',ip,']')
 
             if ip != REQ:
                 root = tk.Tk()
