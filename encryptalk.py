@@ -182,9 +182,8 @@ def client(self, HOST):
         CNT = True
 
         C_E = int(s_client.recv(1024).decode())
-        C_N = int(s_client.recv(1024).decode())
-
         self.console.append(f'[클라이언트] 암호화 키 저장')
+        C_N = int(s_client.recv(1024).decode())
         self.console.append(f'[클라이언트] 공개 키 저장')
 
 
@@ -224,9 +223,8 @@ def server(self):
 
                         dummy = s_client.recv(1024)
                         C_E = int(s_client.recv(1024).decode())
-                        C_N = int(s_client.recv(1024).decode())
-
                         self.console.append(f'[클라이언트] 암호화 키 저장')
+                        C_N = int(s_client.recv(1024).decode())
                         self.console.append(f'[클라이언트] 공개 키 저장')
                         break
                 else:
@@ -243,11 +241,10 @@ def server(self):
         S_N = key[2]
 
         time.sleep(1)
-
         c_server_client.sendall(str(key[1]).encode())
-        c_server_client.sendall(str(key[2]).encode())
-
         self.console.append(f'[서버] 암호화 키 전송')
+        time.sleep(1)
+        c_server_client.sendall(str(key[2]).encode())
         self.console.append(f'[서버] 공개 키 전송')
 
         uid = list(ad)[0].split(".")[3]
